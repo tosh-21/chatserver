@@ -1,4 +1,4 @@
-package SocketConnection
+package ChatServer
 
 import (
 	"bufio"

@@ -2,13 +2,13 @@ package main
 
 import (
 	"os"
-	SocketConnection "socketProgram/app"
+	"socketProgram/app"
 )
 
 func main() {
 	if os.Getenv("mode") == "accept" {
-		SocketConnection.Connect()
+		ChatServer.Connect()
 	} else {
-		SocketConnection.Dial()
+		ChatServer.Dial()
 	}
 }
