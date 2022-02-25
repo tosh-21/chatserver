@@ -41,24 +41,23 @@ func Connect() {
 
 func HandleConnection(connection net.Conn, chat *chat) {
 	connection.Write([]byte("Hello, please enter your name: "))
-	buf := make([]byte, 1024)
-	connection.Read(buf)
 	Name, err := bufio.NewReader(connection).ReadString('\n')
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
 	}
 	Name = strings.TrimSpace(Name)
-	connection.Write([]byte("Please enter your message: "))
 	for {
+		connection.Write([]byte("Enter message: "))
 		msg, err := bufio.NewReader(connection).ReadString('\n')
 		if err != nil {
 			fmt.Println("Error: ", err)
+			return
 		}
 		msg = strings.TrimSpace(msg)
-		//connection.Write([]byte(fmt.Sprintf("%s said: %s \n", Name, msg)))
-		for _, client := range chat.users {
-			client.Write([]byte(fmt.Sprintf("%s said: %s ", Name, msg)))
+
+		for _, client := range chat.users { //goroutine does not work to remediate
+			client.Write([]byte(fmt.Sprintf("%s said: %s \n", Name, msg)))
 		}
 	}
 	connection.Close()
