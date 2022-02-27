@@ -28,36 +28,40 @@ func Dial() {
 
 func HandleUserConnection(userconnection net.Conn) {
 
-	buf := make([]byte, 1024) //Initial message from server prompting for name
-	userconnection.Read(buf)
-	fmt.Printf(string(buf)) //Server prints name
+	CheckForMessage(userconnection) //server sends first message for name prompt
+
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
+	//log.Println(input)
 
 	if err != nil {
 		log.Fatal("Error while reading input")
 	}
 
-	userconnection.Write([]byte(input)) //Send name to server
-
-	buf = make([]byte, 1024)
-	userconnection.Read(buf)
-	fmt.Printf(string(buf)) //Server prints input request for first message
+	userconnection.Write([]byte(input)) //send name to server
 
 	for {
 
-		input, err := reader.ReadString('\n')
-		if err != nil {
-			log.Fatal("Error while reading input")
-		}
-		userconnection.Write([]byte(input))
-		buf = make([]byte, 1024)
-		userconnection.Read(buf)
-		fmt.Println(string(buf))
+		go func() {
+			input, err := reader.ReadString('\n')
+			//log.Println(input)
+			if err != nil {
+				log.Fatal("Error while reading input")
+			}
+			userconnection.Write([]byte(input))
+		}()
+		CheckForMessage(userconnection)
 
 	}
 
 	//time.Sleep(1 * time.Second)
 
 	//userconnection.Close()
+}
+
+func CheckForMessage(conn net.Conn) {
+	//buffer initialization; read server value into buffer; print value as string
+	buf := make([]byte, 1024)
+	conn.Read(buf)
+	fmt.Println(string(buf))
 }

@@ -3,6 +3,7 @@ package ChatServer
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"net"
 	"strings"
 )
@@ -55,8 +56,9 @@ func HandleConnection(connection net.Conn, chat *chat) {
 			return
 		}
 		msg = strings.TrimSpace(msg)
+		log.Println(Name, msg)
 
-		for _, client := range chat.users { //goroutine does not work to remediate
+		for _, client := range chat.users { //does not work as goroutine
 			client.Write([]byte(fmt.Sprintf("%s said: %s \n", Name, msg)))
 		}
 	}
