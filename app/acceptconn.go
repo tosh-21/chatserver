@@ -3,7 +3,6 @@ package ChatServer
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"net"
 	"strings"
 )
@@ -41,25 +40,25 @@ func Connect() {
 }
 
 func HandleConnection(connection net.Conn, chat *chat) {
-	connection.Write([]byte("Hello, please enter your name: "))
-	Name, err := bufio.NewReader(connection).ReadString('\n')
+	connection.Write([]byte("Hello, please enter your name: ")) //prompts user for name upon connection
+	Name, err := bufio.NewReader(connection).ReadString('\n')   //reads name
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
 	}
 	Name = strings.TrimSpace(Name)
 	for {
-		connection.Write([]byte("Enter message: "))
-		msg, err := bufio.NewReader(connection).ReadString('\n')
+		//infinite loop for user's messages
+		connection.Write([]byte("\n Enter message: "))           //prompts user for message
+		msg, err := bufio.NewReader(connection).ReadString('\n') //reads message
 		if err != nil {
 			fmt.Println("Error: ", err)
 			return
 		}
 		msg = strings.TrimSpace(msg)
-		log.Println(Name, msg)
 
 		for _, client := range chat.users { //does not work as goroutine
-			client.Write([]byte(fmt.Sprintf("%s said: %s \n", Name, msg)))
+			client.Write([]byte(fmt.Sprintf("\n %s said: %s", Name, msg)))
 		}
 	}
 	connection.Close()
