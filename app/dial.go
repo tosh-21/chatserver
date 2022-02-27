@@ -30,27 +30,31 @@ func HandleUserConnection(userconnection net.Conn) {
 
 	CheckForMessage(userconnection) //server sends first message for name prompt
 
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
-	//log.Println(input)
+	go func() {
+		reader := bufio.NewReader(os.Stdin)
+		input, err := reader.ReadString('\n') //user enters name
 
-	if err != nil {
-		log.Fatal("Error while reading input")
-	}
+		if err != nil {
+			log.Fatal("Error while reading input")
+		}
 
-	userconnection.Write([]byte(input)) //send name to server
+		userconnection.Write([]byte(input)) //send name to server
+	}()
+
+	go CheckForMessage(userconnection) //checks for and prints any messages from any client during name prompt
 
 	for {
 
 		go func() {
-			input, err := reader.ReadString('\n')
-			//log.Println(input)
+			reader := bufio.NewReader(os.Stdin)
+
+			input, err := reader.ReadString('\n') //user enters messsage
 			if err != nil {
 				log.Fatal("Error while reading input")
 			}
-			userconnection.Write([]byte(input))
+			userconnection.Write([]byte(input)) //message sent to server
 		}()
-		CheckForMessage(userconnection)
+		CheckForMessage(userconnection) //checks for and prints any messages from other users
 
 	}
 
