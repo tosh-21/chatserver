@@ -28,31 +28,33 @@ func Dial() {
 
 func HandleUserConnection(userconnection net.Conn) {
 
-	CheckForMessage(userconnection) //server sends first message for name prompt
+	ReadFromServer(userconnection) //server sends first message for name prompt
+	reader := bufio.NewReader(os.Stdin)
 
 	go func() {
-		reader := bufio.NewReader(os.Stdin)
-		input, err := reader.ReadString('\n') //user enters name
-
-		if err != nil {
-			log.Fatal("Error while reading input")
+		for {
+			ReadFromServer(userconnection)
 		}
-
-		userconnection.Write([]byte(input)) //send name to server
 	}()
-	CheckForMessage(userconnection) //checks for and prints any messages from any client during name prompt
+	input, err := reader.ReadString('\n') //user enters name
+
+	if err != nil {
+		log.Fatal("Error while reading input")
+	}
+
+	WriteToServer(userconnection, input) //send name to server
+
+	//ReadFromServer(userconnection) //checks for and prints any messages from any client during name prompt
 
 	for {
 
-		go func() {
-			reader := bufio.NewReader(os.Stdin)
-			input, err := reader.ReadString('\n') //user enters messsage
-			if err != nil {
-				log.Fatal("Error while reading input")
-			}
-			userconnection.Write([]byte(input)) //message sent to server
-		}()
-		CheckForMessage(userconnection) //checks for and prints any messages from other users
+		input, err := reader.ReadString('\n') //user enters messsage
+		if err != nil {
+			log.Fatal("Error while reading input")
+		}
+		WriteToServer(userconnection, input) //message sent to server
+
+		//ReadFromServer(userconnection) //checks for and prints any messages from other users
 
 	}
 
@@ -61,9 +63,13 @@ func HandleUserConnection(userconnection net.Conn) {
 	//userconnection.Close()
 }
 
-func CheckForMessage(conn net.Conn) {
+func ReadFromServer(conn net.Conn) {
 	//buffer initialization; read server value into buffer; print value as string
 	buf := make([]byte, 1024)
 	conn.Read(buf)
 	fmt.Println(string(buf))
+}
+
+func WriteToServer(conn net.Conn, message string) {
+	conn.Write([]byte(message))
 }
