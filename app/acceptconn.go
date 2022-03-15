@@ -57,8 +57,12 @@ func HandleConnection(connection net.Conn, chat *chat) {
 		}
 		msg = strings.TrimSpace(msg)
 
-		for _, client := range chat.users { //does not work as goroutine
-			client.Write([]byte(fmt.Sprintf("\n %s said: %s", Name, msg)))
+		for _, client := range chat.users {
+			if msg == "end" {
+				client.Write([]byte(fmt.Sprintf("\n %s has left the chat", Name)))
+			} else {
+				client.Write([]byte(fmt.Sprintf("\n %s said: %s", Name, msg)))
+			}
 		}
 	}
 	connection.Close()
