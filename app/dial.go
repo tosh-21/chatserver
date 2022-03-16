@@ -33,13 +33,11 @@ func HandleUserConnection(userconnection net.Conn) {
 
 	//debuguser := os.Getenv("username")
 	//log.Println(debuguser)
-	if os.Getenv("username") == "willy" {
+
+	if os.Getenv("username") != "" {
 		ReadFromServer(userconnection)
-		WriteToServer(userconnection, "willy \n")
-	} else if os.Getenv("username") == "kookoo" {
-		WriteToServer(userconnection, "kookoo") //send name to server
-	} else if os.Getenv("username") == "tosh" {
-		WriteToServer(userconnection, "tosh")
+		name := os.Getenv("username") + "\n"
+		WriteToServer(userconnection, name)
 	} else {
 		PrintFromServer(userconnection)       //server sends first message for name prompt
 		input, err := reader.ReadString('\n') //user enters name
@@ -48,7 +46,7 @@ func HandleUserConnection(userconnection net.Conn) {
 			fmt.Println("Error: ", err)
 			return
 		}
-
+		
 		WriteToServer(userconnection, input)
 	}
 
