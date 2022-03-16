@@ -29,23 +29,34 @@ func Dial() {
 
 func HandleUserConnection(userconnection net.Conn) {
 
-	ReadFromServer(userconnection)      //server sends first message for name prompt
 	reader := bufio.NewReader(os.Stdin) //initialize reader
+
+	//debuguser := os.Getenv("username")
+	//log.Println(debuguser)
+	if os.Getenv("username") == "willy" {
+		ReadFromServer(userconnection)
+		WriteToServer(userconnection, "willy \n")
+	} else if os.Getenv("username") == "kookoo" {
+		WriteToServer(userconnection, "kookoo") //send name to server
+	} else if os.Getenv("username") == "tosh" {
+		WriteToServer(userconnection, "tosh")
+	} else {
+		PrintFromServer(userconnection)       //server sends first message for name prompt
+		input, err := reader.ReadString('\n') //user enters name
+
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		WriteToServer(userconnection, input)
+	}
 
 	go func() { //run infinite for loop concurrently to retrieve any messages from other users
 		for {
-			ReadFromServer(userconnection)
+			PrintFromServer(userconnection)
 		}
 	}()
-
-	input, err := reader.ReadString('\n') //user enters name
-
-	if err != nil {
-		fmt.Println("Error: ", err)
-		return
-	}
-
-	WriteToServer(userconnection, input) //send name to server
 
 	for { //main messaging block
 
@@ -64,11 +75,14 @@ func HandleUserConnection(userconnection net.Conn) {
 	//userconnection.Close()
 }
 
-func ReadFromServer(conn net.Conn) {
+func PrintFromServer(conn net.Conn) {
+	fmt.Println(ReadFromServer(conn))
+}
+func ReadFromServer(conn net.Conn) string {
 	//buffer initialization; read server value into buffer; print value as string
 	buf := make([]byte, 1024)
 	conn.Read(buf)
-	fmt.Println(string(buf))
+	return string(buf)
 }
 
 func WriteToServer(conn net.Conn, message string) {
