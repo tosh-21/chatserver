@@ -31,26 +31,23 @@ func HandleUserConnection(userconnection net.Conn) {
 
 	reader := bufio.NewReader(os.Stdin) //initialize reader
 
-	//debuguser := os.Getenv("username")
-	//log.Println(debuguser)
-
 	if os.Getenv("username") != "" {
 		ReadFromServer(userconnection)
 		name := os.Getenv("username") + "\n"
 		WriteToServer(userconnection, name)
 	} else {
-		PrintFromServer(userconnection)       //server sends first message for name prompt
-		input, err := reader.ReadString('\n') //user enters name
+		PrintFromServer(userconnection)
+		input, err := reader.ReadString('\n')
 
 		if err != nil {
 			fmt.Println("Error: ", err)
 			return
 		}
-		
+
 		WriteToServer(userconnection, input)
 	}
 
-	go func() { //run infinite for loop concurrently to retrieve any messages from other users
+	go func() { //run infinite for loop concurrently to retrieve any messages from other UserConnections
 		for {
 			PrintFromServer(userconnection)
 		}

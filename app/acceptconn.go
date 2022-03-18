@@ -7,8 +7,14 @@ import (
 	"strings"
 )
 
-type chat struct {
-	users []net.Conn
+type User struct {
+	UserName   string
+	ScreenName string
+	Password   string
+}
+type ChatServer struct {
+	UserConnections []net.Conn
+	Users           map[string]User
 }
 
 func Connect() {
@@ -20,8 +26,11 @@ func Connect() {
 	}
 	defer dataStream.Close()
 
-	AllConn := chat{
-		users: []net.Conn{},
+	chatServer := ChatServer{}
+	chatServer.Users["tosh"] = User{
+		UserName:   "smahadev",
+		ScreenName: "tosh",
+		Password:   "Password123",
 	}
 	for {
 		conn, err := dataStream.Accept()
@@ -30,16 +39,23 @@ func Connect() {
 			return
 		}
 
-		AllConn.users = append(AllConn.users, conn)
+		chatServer.UserConnections = append(chatServer.UserConnections, conn)
 		go func() {
 			// your very own scope
-			HandleConnection(conn, &AllConn)
+			chatServer.HandleConnection(conn)
 
 		}()
 	}
 }
 
-func HandleConnection(connection net.Conn, chat *chat) {
+func (chat *ChatServer) HandleConnection(connection net.Conn) {
+	//Ask for Username
+	//Check if Username exists in chat.Users map
+	//If User exists, ask for password
+	//Check if Password = value of chat.Users map
+	//If yes, grant access
+	//If no 3 times, send emoji warning
+	//If User does not exist, prompt for password and details
 	connection.Write([]byte("Hello, please enter your name: ")) //prompts user for name upon connection
 	Name, err := bufio.NewReader(connection).ReadString('\n')   //reads name
 	if err != nil {
@@ -57,9 +73,9 @@ func HandleConnection(connection net.Conn, chat *chat) {
 		}
 		msg = strings.TrimSpace(msg)
 
-		for _, client := range chat.users {
+		for _, client := range chat.UserConnections {
 			if msg == "end" {
-				client.Write([]byte(fmt.Sprintf("\n %s has left the chat", Name)))
+				client.Write([]byte(fmt.Sprintf("\n %s has left the ChatServer", Name)))
 			} else {
 				client.Write([]byte(fmt.Sprintf("\n %s said: %s", Name, msg)))
 			}
