@@ -24,9 +24,22 @@ func main() {
 	chatServer1 := ChatServer{}
 	chatServer1.Users = make(map[string]User)
 
-	chatServer1.Users["test"] = GetUserData()
+	chatServer1.Users["kkalisek"] = User{
+		UserName:   "kkalisek",
+		ScreenName: "kookoo",
+		Password:   "pw123",
+	}
 
-	fmt.Println(chatServer1.Users)
+	NewUser := GetUserData()
+
+	if val, ok := chatServer1.Users[NewUser.UserName]; !ok {
+		log.Println(val)
+		chatServer1.Users[NewUser.UserName] = NewUser
+	} else {
+		fmt.Println("Username already exists")
+	}
+	
+	fmt.Println(chatServer1)
 }
 
 func PromptQuestion(question string) string {
