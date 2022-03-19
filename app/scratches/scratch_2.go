@@ -30,15 +30,16 @@ func main() {
 		Password:   "pw123",
 	}
 
-	NewUser := GetUserData()
+	NewUser := GetUserName()
 
-	if val, ok := chatServer1.Users[NewUser.UserName]; !ok {
-		log.Println(val)
-		chatServer1.Users[NewUser.UserName] = NewUser
+	if _, ok := chatServer1.Users[NewUser.UserName]; !ok {
+		GetPassword()
+		GetScreenName()
 	} else {
-		fmt.Println("Username already exists")
+		fmt.Println("Username already exists. Choose another one")
+		main()
 	}
-	
+
 	fmt.Println(chatServer1)
 }
 
@@ -52,17 +53,30 @@ func PromptQuestion(question string) string {
 	return strings.TrimSpace(input)
 }
 
-func GetUserData() User {
+func GetUserName() User {
 	UN := PromptQuestion("Please enter your Username: ")
+
+	UserData := User{
+		UserName: UN,
+	}
+	return UserData
+
+}
+
+func GetPassword() User {
 	PW := PromptQuestion("Please enter your Password: ")
+
+	UserData := User{
+		Password: PW,
+	}
+	return UserData
+}
+
+func GetScreenName() User {
 	SN := PromptQuestion("Please enter your Screen Name: ")
 
 	UserData := User{
-		UserName:   UN,
 		ScreenName: SN,
-		Password:   PW,
 	}
-
 	return UserData
-
 }
