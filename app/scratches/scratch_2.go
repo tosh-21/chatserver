@@ -86,6 +86,7 @@ func (chat *ChatServer) VerifyUserName(name string) string {
 		NewName := GetUserName()
 		chat.VerifyUserName(NewName.UserName)
 	} else {
+		NewName = name
 		fmt.Printf("%s is available, Welcome! \n", name)
 	}
 	return NewName
@@ -101,7 +102,7 @@ func (chat *ChatServer) VerifyScreenName(ScreenName string) string {
 			chat.VerifyScreenName(NewScreenName.ScreenName)
 			return NewScreenName.ScreenName
 		} else {
-			NewScreenName := ScreenName
+			NewScreenName = ScreenName
 			fmt.Printf("%s is available. Hello! \n", NewScreenName)
 		}
 	}
