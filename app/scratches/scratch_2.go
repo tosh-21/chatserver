@@ -31,14 +31,11 @@ func main() {
 	}
 
 	NewUser := GetUserName()
+	chatServer1.VerifyUserName(NewUser)
+	NewUser.Password = GetPassword().Password
+	NewUser.ScreenName = chatServer1.VerifyScreenName(GetScreenName().ScreenName)
 
-	if _, ok := chatServer1.Users[NewUser.UserName]; !ok {
-		GetPassword()
-		GetScreenName()
-	} else {
-		fmt.Println("Username already exists. Choose another one")
-		main()
-	}
+	chatServer1.Users[NewUser.UserName] = NewUser
 
 	fmt.Println(chatServer1)
 }
@@ -79,4 +76,36 @@ func GetScreenName() User {
 		ScreenName: SN,
 	}
 	return UserData
+}
+
+func (chat *ChatServer) VerifyUserName(name User) User {
+	var NewName User
+	for _, users := range chat.Users {
+		if name.UserName == users.UserName {
+			fmt.Println("Username is taken, please enter another: ")
+			NewName := GetUserName()
+			chat.VerifyUserName(NewName)
+			return NewName
+		} else {
+			NewName := name
+			fmt.Printf("%s is available. Welcome! \n", NewName.UserName)
+		}
+	}
+	return NewName
+}
+
+func (chat *ChatServer) VerifyScreenName(ScreenName string) string {
+	var NewScreenName string
+	for _, users := range chat.Users {
+		if ScreenName == users.ScreenName {
+			fmt.Printf("Screen Name is taken. ")
+			NewScreenName := GetScreenName()
+			chat.VerifyScreenName(NewScreenName.ScreenName)
+			return NewScreenName.ScreenName
+		} else {
+			NewScreenName := ScreenName
+			fmt.Printf("%s is available. Hello! \n", NewScreenName)
+		}
+	}
+	return NewScreenName
 }
