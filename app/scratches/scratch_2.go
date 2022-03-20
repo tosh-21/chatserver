@@ -83,8 +83,8 @@ func (chat *ChatServer) VerifyUserName(name string) string {
 	var NewName string
 	if _, found := chat.Users[name]; found {
 		fmt.Printf("%s is taken. ", name)
-		NewName := GetUserName()
-		chat.VerifyUserName(NewName.UserName)
+		NewName = GetUserName().UserName
+		NewName = chat.VerifyUserName(NewName)
 	} else {
 		NewName = name
 		fmt.Printf("%s is available, Welcome! \n", name)
@@ -98,9 +98,9 @@ func (chat *ChatServer) VerifyScreenName(ScreenName string) string {
 	for _, users := range chat.Users {
 		if ScreenName == users.ScreenName {
 			fmt.Printf("%s is taken. ", ScreenName)
-			NewScreenName := GetScreenName()
-			chat.VerifyScreenName(NewScreenName.ScreenName)
-			return NewScreenName.ScreenName
+			NewScreenName = GetScreenName().ScreenName
+			NewScreenName = chat.VerifyScreenName(NewScreenName)
+			return NewScreenName
 		} else {
 			NewScreenName = ScreenName
 			fmt.Printf("%s is available. Hello! \n", NewScreenName)
