@@ -30,8 +30,9 @@ func main() {
 		Password:   "pw123",
 	}
 
-	NewUser := GetUserName()
-	NewUser.UserName = chatServer1.VerifyUserName(NewUser).UserName
+	var NewUser User
+	NewUserName := GetUserName()
+	NewUser.UserName = chatServer1.VerifyUserName(NewUserName.UserName)
 	NewUser.Password = GetPassword().Password
 	NewUser.ScreenName = chatServer1.VerifyScreenName(GetScreenName().ScreenName)
 
@@ -78,20 +79,17 @@ func GetScreenName() User {
 	return UserData
 }
 
-func (chat *ChatServer) VerifyUserName(name User) User {
-	var NewName User
-	for _, users := range chat.Users {
-		if name.UserName == users.UserName {
-			fmt.Printf("%s is taken. ", name.UserName)
-			NewName := GetUserName()
-			chat.VerifyUserName(NewName)
-			return NewName
-		} else {
-			NewName := name
-			fmt.Printf("%s is available. Welcome! \n", NewName.UserName)
-		}
+func (chat *ChatServer) VerifyUserName(name string) string {
+	var NewName string
+	if _, found := chat.Users[name]; found {
+		fmt.Printf("%s is taken. ", name)
+		NewName := GetUserName()
+		chat.VerifyUserName(NewName.UserName)
+	} else {
+		fmt.Printf("%s is available, Welcome! \n", name)
 	}
 	return NewName
+
 }
 
 func (chat *ChatServer) VerifyScreenName(ScreenName string) string {
