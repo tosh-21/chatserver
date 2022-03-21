@@ -31,14 +31,13 @@ func main() {
 	}
 
 	var NewUser User
-	NewUserName := GetUserName()
-	NewUser.UserName = chatServer1.VerifyUserName(NewUserName.UserName)
+	NewUser.UserName = chatServer1.VerifyUserName()
 	NewUser.Password = GetPassword().Password
-	NewUser.ScreenName = chatServer1.VerifyScreenName(GetScreenName().ScreenName)
+	NewUser.ScreenName = chatServer1.VerifyScreenName()
 
 	chatServer1.Users[NewUser.UserName] = NewUser
 
-	fmt.Println(chatServer1)
+	fmt.Println(chatServer1.Users)
 }
 
 func PromptQuestion(question string) string {
@@ -79,30 +78,30 @@ func GetScreenName() User {
 	return UserData
 }
 
-func (chat *ChatServer) VerifyUserName(name string) string {
+func (chat *ChatServer) VerifyUserName() string {
 	var NewName string
-	if _, found := chat.Users[name]; found {
-		fmt.Printf("%s is taken. ", name)
-		NewName = GetUserName().UserName
-		NewName = chat.VerifyUserName(NewName)
+	NewUser := GetUserName()
+	if _, found := chat.Users[NewUser.UserName]; found {
+		fmt.Printf("%s is taken. ", NewUser.UserName)
+		NewName = chat.VerifyUserName()
 	} else {
-		NewName = name
-		fmt.Printf("%s is available, Welcome! \n", name)
+		NewName = NewUser.UserName
+		fmt.Printf("%s is available, Welcome! \n", NewUser.UserName)
 	}
 	return NewName
 
 }
 
-func (chat *ChatServer) VerifyScreenName(ScreenName string) string {
+func (chat *ChatServer) VerifyScreenName() string {
 	var NewScreenName string
+	NewUser := GetScreenName()
 	for _, users := range chat.Users {
-		if ScreenName == users.ScreenName {
-			fmt.Printf("%s is taken. ", ScreenName)
-			NewScreenName = GetScreenName().ScreenName
-			NewScreenName = chat.VerifyScreenName(NewScreenName)
+		if NewUser.ScreenName == users.ScreenName {
+			fmt.Printf("%s is taken. ", NewUser.ScreenName)
+			NewScreenName = chat.VerifyScreenName()
 			return NewScreenName
 		} else {
-			NewScreenName = ScreenName
+			NewScreenName = NewUser.ScreenName
 			fmt.Printf("%s is available. Hello! \n", NewScreenName)
 		}
 	}
