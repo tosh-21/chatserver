@@ -30,12 +30,7 @@ func main() {
 		Password:   "pw123",
 	}
 
-	var NewUser User
-	NewUser.UserName = chatServer1.VerifyUserName()
-	NewUser.Password = GetPassword().Password
-	NewUser.ScreenName = chatServer1.VerifyScreenName()
-
-	chatServer1.Users[NewUser.UserName] = NewUser
+	chatServer1.CreateNewUser()
 
 	fmt.Println(chatServer1.Users)
 }
@@ -106,4 +101,14 @@ func (chat *ChatServer) VerifyScreenName() string {
 		}
 	}
 	return NewScreenName
+}
+
+func (chat *ChatServer) CreateNewUser() {
+	var NewUser User
+	NewUser.UserName = chat.VerifyUserName()
+	NewUser.Password = GetPassword().Password
+	NewUser.ScreenName = chat.VerifyScreenName()
+
+	chat.Users[NewUser.UserName] = NewUser
+
 }

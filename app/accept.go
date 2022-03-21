@@ -27,11 +27,7 @@ func Connect() {
 	defer dataStream.Close()
 
 	chatServer := ChatServer{}
-	chatServer.Users["tosh"] = User{
-		UserName:   "smahadev",
-		ScreenName: "tosh",
-		Password:   "Password123",
-	}
+	
 	for {
 		conn, err := dataStream.Accept()
 		if err != nil {
@@ -56,13 +52,15 @@ func (chat *ChatServer) HandleConnection(connection net.Conn) {
 	//If yes, grant access
 	//If no 3 times, send emoji warning
 	//If User does not exist, prompt for password and details
-	connection.Write([]byte("Hello, please enter your name: ")) //prompts user for name upon connection
-	Name, err := bufio.NewReader(connection).ReadString('\n')   //reads name
-	if err != nil {
-		fmt.Println("Error: ", err)
-		return
-	}
-	Name = strings.TrimSpace(Name)
+	//connection.Write([]byte("Hello, please enter your name: ")) //prompts user for name upon connection
+	//Name, err := bufio.NewReader(connection).ReadString('\n')   //reads name
+	//if err != nil {
+	//	fmt.Println("Error: ", err)
+	//	return
+	//}
+	//
+	//Name = strings.TrimSpace(Name)
+	NewUser := chat.CreateNewUser(connection)
 	for {
 		//infinite loop for user's messages
 		connection.Write([]byte("\n Enter message: "))           //prompts user for message
@@ -75,9 +73,9 @@ func (chat *ChatServer) HandleConnection(connection net.Conn) {
 
 		for _, client := range chat.UserConnections {
 			if msg == "end" {
-				client.Write([]byte(fmt.Sprintf("\n %s has left the ChatServer", Name)))
+				client.Write([]byte(fmt.Sprintf("\n %s has left the ChatServer", NewUser.ScreenName)))
 			} else {
-				client.Write([]byte(fmt.Sprintf("\n %s said: %s", Name, msg)))
+				client.Write([]byte(fmt.Sprintf("\n %s said: %s", NewUser.ScreenName, msg)))
 			}
 		}
 	}
