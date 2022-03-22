@@ -81,7 +81,7 @@ func (chat *ChatServer) VerifyPassword(NewUser User) bool {
 	}
 }
 
-func (chat *ChatServer) VerifyUserName() string {
+func (chat *ChatServer) CheckUserName() (string, bool) {
 	var NewName string
 	NewUser := GetUserName()
 	if _, found := chat.Users[NewUser.UserName]; found {
@@ -94,6 +94,7 @@ func (chat *ChatServer) VerifyUserName() string {
 			NewUser.Password = GetPassword().Password
 			if chat.VerifyPassword(NewUser) {
 				fmt.Println("Password found, welcome.")
+				return NewName, true
 			} else {
 				fmt.Println("Password incorrect, goodbye:")
 			}
@@ -102,7 +103,8 @@ func (chat *ChatServer) VerifyUserName() string {
 		NewName = NewUser.UserName
 		fmt.Printf("%s is available, Welcome! \n", NewUser.UserName)
 	}
-	return NewName
+
+	return NewName, false
 
 }
 
@@ -124,9 +126,15 @@ func (chat *ChatServer) VerifyScreenName() string {
 
 func (chat *ChatServer) CreateNewUser() {
 	var NewUser User
-	NewUser.UserName = chat.VerifyUserName()
+	var Verification bool
+	NewUser.UserName, Verification = chat.CheckUserName()
 	//NewUser.Password = GetPassword().Password
-	NewUser.ScreenName = chat.VerifyScreenName()
+	if Verification == true {
+		NewUser.ScreenName = chat.VerifyScreenName()
+	} else {
+		NewUser.Password = GetPassword().Password
+		NewUser.ScreenName = chat.VerifyScreenName()
+	}
 
 	chat.Users[NewUser.UserName] = NewUser
 
