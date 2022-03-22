@@ -27,7 +27,7 @@ func Connect() {
 	defer dataStream.Close()
 
 	chatServer := ChatServer{}
-	
+
 	for {
 		conn, err := dataStream.Accept()
 		if err != nil {
@@ -38,13 +38,13 @@ func Connect() {
 		chatServer.UserConnections = append(chatServer.UserConnections, conn)
 		go func() {
 			// your very own scope
-			chatServer.HandleConnection(conn)
+			chatServer.HandleConnection(conn, chatServer)
 
 		}()
 	}
 }
 
-func (chat *ChatServer) HandleConnection(connection net.Conn) {
+func (chat *ChatServer) HandleConnection(connection net.Conn, chserv ChatServer) {
 	//Ask for Username
 	//Check if Username exists in chat.Users map
 	//If User exists, ask for password
@@ -60,7 +60,12 @@ func (chat *ChatServer) HandleConnection(connection net.Conn) {
 	//}
 	//
 	//Name = strings.TrimSpace(Name)
+
 	NewUser := chat.CreateNewUser(connection)
+	NewUserMap := make(map[string]User)
+	NewUserMap[NewUser.UserName] = NewUser
+	chat.Users = NewUserMap
+
 	for {
 		//infinite loop for user's messages
 		connection.Write([]byte("\n Enter message: "))           //prompts user for message

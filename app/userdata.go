@@ -63,26 +63,32 @@ func (chat *ChatServer) VerifyUserName(conn net.Conn) string {
 func (chat *ChatServer) VerifyScreenName(conn net.Conn) string {
 	var NewScreenName string
 	NewUser := GetScreenName(conn)
-	for _, users := range chat.Users {
-		if NewUser.ScreenName == users.ScreenName {
-			WriteToServer(conn, fmt.Sprintf("%s is taken. ", NewUser.ScreenName))
-			NewScreenName = chat.VerifyScreenName(conn)
-			return NewScreenName
-		} else {
-			NewScreenName = NewUser.ScreenName
-			WriteToServer(conn, fmt.Sprintf("%s is available. Hello! \n", NewScreenName))
+	if chat.Users == nil {
+		NewScreenName = NewUser.ScreenName
+		WriteToServer(conn, fmt.Sprintf("%s is available. Hello! \n", NewScreenName))
+	} else {
+		for _, users := range chat.Users {
+			if NewUser.ScreenName == users.ScreenName {
+				WriteToServer(conn, fmt.Sprintf("%s is taken. ", NewUser.ScreenName))
+				NewScreenName = chat.VerifyScreenName(conn)
+				return NewScreenName
+			} else {
+				NewScreenName = NewUser.ScreenName
+				WriteToServer(conn, fmt.Sprintf("%s is available. Hello! \n", NewScreenName))
+			}
 		}
+
 	}
 	return NewScreenName
 }
 
 func (chat *ChatServer) CreateNewUser(conn net.Conn) User {
 	var NewUser User
+
 	NewUser.UserName = chat.VerifyUserName(conn)
 	NewUser.Password = GetPassword(conn).Password
 	NewUser.ScreenName = chat.VerifyScreenName(conn)
 
-	chat.Users[NewUser.UserName] = NewUser
-
 	return NewUser
+
 }
