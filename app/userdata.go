@@ -46,6 +46,10 @@ func GetScreenName(conn net.Conn) User {
 	return UserData
 }
 
+func (chat *ChatServer) VerifyPassword(conn net.Conn) bool {
+
+	return false
+}
 func (chat *ChatServer) VerifyUserName(conn net.Conn) string {
 	var NewName string
 	NewUser := GetUserName(conn)
@@ -86,7 +90,6 @@ func (chat *ChatServer) CreateNewUser(conn net.Conn) User {
 	var NewUser User
 
 	NewUser.UserName = chat.VerifyUserName(conn)
-	NewUser.Password = GetPassword(conn).Password
 	NewUser.ScreenName = chat.VerifyScreenName(conn)
 
 	return NewUser

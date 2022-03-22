@@ -73,12 +73,31 @@ func GetScreenName() User {
 	return UserData
 }
 
+func (chat *ChatServer) VerifyPassword(NewUser User) bool {
+	if NewUser.Password == chat.Users[NewUser.UserName].Password {
+		return true
+	} else {
+		return false
+	}
+}
+
 func (chat *ChatServer) VerifyUserName() string {
 	var NewName string
 	NewUser := GetUserName()
 	if _, found := chat.Users[NewUser.UserName]; found {
-		fmt.Printf("%s is taken. ", NewUser.UserName)
-		NewName = chat.VerifyUserName()
+		NewUser.Password = GetPassword().Password
+		if chat.VerifyPassword(NewUser) {
+			fmt.Println("Password found, welcome.")
+			fmt.Printf("Your screen name is %s \n", chat.Users[NewUser.UserName].ScreenName)
+		} else {
+			fmt.Println("Password incorrect, try again:")
+			NewUser.Password = GetPassword().Password
+			if chat.VerifyPassword(NewUser) {
+				fmt.Println("Password found, welcome.")
+			} else {
+				fmt.Println("Password incorrect, goodbye:")
+			}
+		}
 	} else {
 		NewName = NewUser.UserName
 		fmt.Printf("%s is available, Welcome! \n", NewUser.UserName)
@@ -106,7 +125,7 @@ func (chat *ChatServer) VerifyScreenName() string {
 func (chat *ChatServer) CreateNewUser() {
 	var NewUser User
 	NewUser.UserName = chat.VerifyUserName()
-	NewUser.Password = GetPassword().Password
+	//NewUser.Password = GetPassword().Password
 	NewUser.ScreenName = chat.VerifyScreenName()
 
 	chat.Users[NewUser.UserName] = NewUser
