@@ -97,6 +97,7 @@ func (chat *ChatServer) CheckUserName() (string, bool) {
 				return NewName, true
 			} else {
 				fmt.Println("Password incorrect, goodbye:")
+				os.Exit(3)
 			}
 		}
 	} else {
