@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"strings"
 )
 
@@ -46,21 +47,40 @@ func GetScreenName(conn net.Conn) User {
 	return UserData
 }
 
-func (chat *ChatServer) VerifyPassword(conn net.Conn) bool {
-
-	return false
+func (chat *ChatServer) VerifyPassword(conn net.Conn, NewUser User) bool {
+	if NewUser.Password == chat.Users[NewUser.UserName].Password {
+		return true
+	} else {
+		return false
+	}
 }
-func (chat *ChatServer) VerifyUserName(conn net.Conn) string {
+
+func (chat *ChatServer) CheckUserName(conn net.Conn) (string, bool) {
 	var NewName string
 	NewUser := GetUserName(conn)
 	if _, found := chat.Users[NewUser.UserName]; found {
-		WriteToServer(conn, fmt.Sprintf("%s is taken. ", NewUser.UserName))
-		NewName = chat.VerifyUserName(conn)
+		NewUser.Password = GetPassword(conn).Password
+		if chat.VerifyPassword(conn, NewUser) {
+			WriteToServer(conn, fmt.Sprintf("Password found, welcome."))
+			WriteToServer(conn, fmt.Sprintf("Your screen name is %s \n", chat.Users[NewUser.UserName].ScreenName))
+			return NewUser.UserName, true
+		} else {
+			WriteToServer(conn, fmt.Sprintf("Password incorrect, try again: \n"))
+			NewUser.Password = GetPassword(conn).Password
+			if chat.VerifyPassword(conn, NewUser) {
+				WriteToServer(conn, fmt.Sprintf("Password found, welcome."))
+				WriteToServer(conn, fmt.Sprintf("Your screen name is %s \n", chat.Users[NewUser.UserName].ScreenName))
+				return NewUser.UserName, true
+			} else {
+				WriteToServer(conn, fmt.Sprintf("Password incorrect, goodbye."))
+				os.Exit(3)
+			}
+		}
 	} else {
 		NewName = NewUser.UserName
 		WriteToServer(conn, fmt.Sprintf("%s is available, Welcome! \n", NewUser.UserName))
 	}
-	return NewName
+	return NewName, false
 
 }
 
@@ -86,11 +106,17 @@ func (chat *ChatServer) VerifyScreenName(conn net.Conn) string {
 	return NewScreenName
 }
 
-func (chat *ChatServer) CreateNewUser(conn net.Conn) User {
+func (chat *ChatServer) VerifyUser(conn net.Conn) User {
 	var NewUser User
-
-	NewUser.UserName = chat.VerifyUserName(conn)
-	NewUser.ScreenName = chat.VerifyScreenName(conn)
+	var Verification bool
+	UserMap := make(map[string]User)
+	NewUser.UserName, Verification = chat.CheckUserName(conn)
+	if Verification == false {
+		NewUser.Password = GetPassword(conn).Password
+		NewUser.ScreenName = chat.VerifyScreenName(conn)
+		UserMap[NewUser.UserName] = NewUser
+		chat.Users = UserMap
+	}
 
 	return NewUser
 

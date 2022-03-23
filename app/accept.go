@@ -61,11 +61,13 @@ func (chat *ChatServer) HandleConnection(connection net.Conn, chserv ChatServer)
 	//
 	//Name = strings.TrimSpace(Name)
 
-	NewUser := chat.CreateNewUser(connection)
-	NewUserMap := make(map[string]User)
-	NewUserMap[NewUser.UserName] = NewUser
-	chat.Users = NewUserMap
+	//NewUser := chat.VerifyUser(connection)
+	//NewUserMap := make(map[string]User)
+	//NewUserMap[NewUser.UserName] = NewUser
+	//chat.Users = NewUserMap
 
+	NewUser := chat.VerifyUser(connection)
+	fmt.Println(chat.Users)
 	for {
 		//infinite loop for user's messages
 		connection.Write([]byte("\n Enter message: "))           //prompts user for message
