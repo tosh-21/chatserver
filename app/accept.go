@@ -27,6 +27,7 @@ func Connect() {
 	defer dataStream.Close()
 
 	chatServer := ChatServer{}
+	chatServer.Users = make(map[string]User)
 
 	for {
 		conn, err := dataStream.Accept()

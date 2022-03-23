@@ -94,7 +94,7 @@ func (chat *ChatServer) CheckUserName() (string, bool) {
 			fmt.Println("Password incorrect, try again:")
 			NewUser.Password = GetPassword().Password
 			if chat.VerifyPassword(NewUser) {
-				fmt.Println("Password found, welcome.")
+				fmt.Println("Welcome.")
 				fmt.Printf("Your screen name is %s \n", chat.Users[NewUser.UserName].ScreenName)
 				return NewUser.UserName, true
 			} else {
