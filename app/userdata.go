@@ -3,14 +3,15 @@ package ChatServer
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
 	"strings"
 )
 
-func PromptQuestion(question string, conn net.Conn) string {
-	WriteToServer(conn, question)
+func PromptQuestion(question string, conn io.ReadWriter) string {
+	WriteToConnection(conn, question)
 	reader := bufio.NewReader(conn)       //initialize reader
 	input, err := reader.ReadString('\n') //user enters messsage
 	if err != nil {
@@ -45,24 +46,24 @@ func (chat *ChatServer) CheckUserName(conn net.Conn) (string, bool) {
 	if _, found := chat.Users[NewUser]; found {
 		NewUserPassword := GetPassword(conn)
 		if chat.VerifyPassword(NewUserPassword, NewUser) {
-			WriteToServer(conn, fmt.Sprintf("Welcome."))
-			WriteToServer(conn, fmt.Sprintf("Your screen name is %s \n", chat.Users[NewUser].ScreenName))
+			WriteToConnection(conn, fmt.Sprintf("Welcome."))
+			WriteToConnection(conn, fmt.Sprintf("Your screen name is %s \n", chat.Users[NewUser].ScreenName))
 			return NewUser, true
 		} else {
-			WriteToServer(conn, fmt.Sprintf("Password incorrect, try again: \n"))
+			WriteToConnection(conn, fmt.Sprintf("Password incorrect, try again: \n"))
 			NewUserPassword := GetPassword(conn)
 			if chat.VerifyPassword(NewUserPassword, NewUser) {
-				WriteToServer(conn, fmt.Sprintf("Welcome."))
-				WriteToServer(conn, fmt.Sprintf("Your screen name is %s \n", chat.Users[NewUser].ScreenName))
+				WriteToConnection(conn, fmt.Sprintf("Welcome."))
+				WriteToConnection(conn, fmt.Sprintf("Your screen name is %s \n", chat.Users[NewUser].ScreenName))
 				return NewUser, true
 			} else {
-				WriteToServer(conn, fmt.Sprintf("Password incorrect, goodbye."))
+				WriteToConnection(conn, fmt.Sprintf("Password incorrect, goodbye."))
 				os.Exit(3)
 			}
 		}
 	} else {
 		NewName = NewUser
-		WriteToServer(conn, fmt.Sprintf("%s is available, Welcome! \n", NewUser))
+		WriteToConnection(conn, fmt.Sprintf("%s is available, Welcome! \n", NewUser))
 	}
 	return NewName, false
 
@@ -73,16 +74,16 @@ func (chat *ChatServer) VerifyScreenName(conn net.Conn) string {
 	NewUserSN := GetScreenName(conn)
 	if chat.Users == nil {
 		NewScreenName = NewUserSN
-		WriteToServer(conn, fmt.Sprintf("%s is available. Hello! \n", NewScreenName))
+		WriteToConnection(conn, fmt.Sprintf("%s is available. Hello! \n", NewScreenName))
 	} else {
 		for _, users := range chat.Users {
 			if NewUserSN == users.ScreenName {
-				WriteToServer(conn, fmt.Sprintf("%s is taken. ", NewUserSN))
+				WriteToConnection(conn, fmt.Sprintf("%s is taken. ", NewUserSN))
 				NewScreenName = chat.VerifyScreenName(conn)
 				return NewScreenName
 			} else {
 				NewScreenName = NewUserSN
-				WriteToServer(conn, fmt.Sprintf("%s is available. Hello! \n", NewScreenName))
+				WriteToConnection(conn, fmt.Sprintf("%s is available. Hello! \n", NewScreenName))
 			}
 		}
 
