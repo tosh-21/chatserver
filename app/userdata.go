@@ -3,7 +3,6 @@ package ChatServer
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"strings"
@@ -14,8 +13,7 @@ func PromptQuestion(question string, conn net.Conn) string {
 	reader := bufio.NewReader(conn)       //initialize reader
 	input, err := reader.ReadString('\n') //user enters messsage
 	if err != nil {
-		log.Fatalf("Error while reading input: %s", err.Error())
-		return err.Error()
+		return fmt.Sprintf("Error while reading input: %s", err.Error())
 	}
 	return strings.TrimSpace(input)
 }
