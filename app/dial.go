@@ -3,7 +3,6 @@ package ChatServer
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"os"
@@ -81,6 +80,6 @@ func ReadFromServer(conn net.Conn) string {
 	return string(buf)
 }
 
-func WriteToConnection(conn io.ReadWriter, message string) {
+func WriteToConnection(conn net.Conn, message string) {
 	conn.Write([]byte(message))
 }
