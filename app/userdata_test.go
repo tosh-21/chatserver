@@ -45,37 +45,3 @@ func TestPromptQuestion(t *testing.T) {
 
 	})
 }
-
-func TestChatServer_CheckUserName(t *testing.T) {
-	type fields struct {
-		UserConnections []net.Conn
-		Users           map[string]User
-	}
-	type args struct {
-		conn net.Conn
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   string
-		want1  bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			chat := &ChatServer{
-				UserConnections: tt.fields.UserConnections,
-				Users:           tt.fields.Users,
-			}
-			got, got1 := chat.CheckUserName(tt.args.conn)
-			if got != tt.want {
-				t.Errorf("CheckUserName() got = %v, want %v", got, tt.want)
-			}
-			if got1 != tt.want1 {
-				t.Errorf("CheckUserName() got1 = %v, want %v", got1, tt.want1)
-			}
-		})
-	}
-}
