@@ -32,14 +32,7 @@ func TestPromptQuestion(t *testing.T) {
 		time.Sleep(500 * time.Millisecond)
 		client.Close()
 		question := "What is your username!?"
-		go func() {
-			buf := make([]byte, len(question))
-			client.Read(buf)
 
-			assert.Equal(t, string(buf), question)
-			written, err := client.Write([]byte("willy \n"))
-			log.Println(written, err)
-		}()
 		actual := PromptQuestion(question, server)
 		assert.Equal(t, "Error while reading input: EOF", actual)
 
