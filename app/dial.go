@@ -34,7 +34,7 @@ func HandleUserConnection(userconnection net.Conn) {
 	if os.Getenv("username") != "" {
 		ReadFromServer(userconnection)
 		name := os.Getenv("username") + "\n"
-		WriteToServer(userconnection, name)
+		WriteToConnection(userconnection, name)
 	} else {
 		PrintFromServer(userconnection)
 		input, err := reader.ReadString('\n')
@@ -44,7 +44,7 @@ func HandleUserConnection(userconnection net.Conn) {
 			return
 		}
 
-		WriteToServer(userconnection, input)
+		WriteToConnection(userconnection, input)
 	}
 
 	go func() { //run infinite for loop concurrently to retrieve any messages from other UserConnections
@@ -59,7 +59,7 @@ func HandleUserConnection(userconnection net.Conn) {
 		if err != nil {
 			log.Fatal("Error while reading input")
 		}
-		WriteToServer(userconnection, input) //message sent to server
+		WriteToConnection(userconnection, input) //message sent to server
 
 		if strings.TrimSpace(input) == "end" {
 			break
@@ -80,6 +80,6 @@ func ReadFromServer(conn net.Conn) string {
 	return string(buf)
 }
 
-func WriteToServer(conn net.Conn, message string) {
+func WriteToConnection(conn net.Conn, message string) {
 	conn.Write([]byte(message))
 }
