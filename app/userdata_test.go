@@ -21,7 +21,7 @@ func TestPromptQuestion(t *testing.T) {
 			log.Println(written, err)
 		}()
 		actual := PromptQuestion(question, server)
-		assert.Equal(t, "wills", actual)
+		assert.Equal(t, "willy", actual)
 		//if got := PromptQuestion("What is your username?", readWriter); got != "willem" {
 		//	t.Errorf("PromptQuestion() = %v, want %v", got)
 		//}
